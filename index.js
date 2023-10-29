@@ -56,8 +56,88 @@ const salesTax = [
 //! Classes
 
 
+//*Parent Store Class
+class Store {
+    constructor(storeName, location, tax, inventory, balance, expenses, profit, paidTax) {
+        this.storeName = storeName;
+        this.location = location;
+        this.tax = tax;
+        this.inventory;
+        this.balance = balance;
+        this.expenses = expenses;
+        this.profit = profit;
+        this.paidTax;
+    }
+
+    findTax() {
+    }
+}
+
+//? Testing logs:
+//console.log(salesTax.length); //51
+//console.table(salesTax); //tables each state with index value and tax value
+
+
+//*First Extended Class From Store Parent Class
+class MassachusettsStore extends Store {
+    constructor(storeName,location,tax,inventory,balance,expenses,profit,paidTax) {
+        super(storeName,location,tax,inventory,balance,expenses,profit,paidTax);
+    }
+
+    addItems() {
+
+    }
+
+    sellItems() {
+
+    }
+}
+
+//*Second Extended Class From Store Parent Class
+class ConnecticutStore extends Store {
+    constructor(storeName,location,tax,inventory,balance,expenses,profit,paidTax) {
+        super(storeName,location,tax,inventory,balance,expenses,profit,paidTax);
+    }
+    addItems() {
+
+    }
+
+    sellItems() {
+        
+    }
+}
+
+//*Third Extended Class From Store Parent Class
+class MaineStore extends Store {
+    constructor(storeName,location,tax,inventory,balance,expenses,profit,paidTax) {
+        super(storeName,location,tax,inventory,balance,expenses,profit,paidTax);
+    }
+    addItems() {
+
+    }
+
+    sellItems() {
+        
+    }
+}
+
 //! CREATE STORES
 // Generate 3 different stores, each in a different state.
+
+//* MA Store
+let massStore = new MassachusettsStore ("BigAl'sBestStore", {city: "Springfield", state: "MA"}, salesTax[21].tax, 100);
+
+console.log(massStore); //logs MA Store
+
+//* CT Store
+let connStore = new ConnecticutStore ("BigBees'BestStore", {city: "Windsor", state: "CT"}, salesTax[6].tax, 200);
+
+console.log(connStore); //logs CT Store
+
+//* MN Store
+let maineStore = new MaineStore ("BigBeth'sBestStore", {city: "Portland", state: "MN"}, salesTax[19].tax, 300);
+
+console.log(maineStore); //logs MN Store
 
 //! Inventory
 
