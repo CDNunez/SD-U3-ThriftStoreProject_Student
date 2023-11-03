@@ -55,89 +55,107 @@ const salesTax = [
 
 //! Classes
 
-
-//*Parent Store Class
+//*Store Parent Class
 class Store {
-    constructor(storeName, location, tax, inventory, balance, expenses, profit, paidTax) {
-        this.storeName = storeName;
+    static addStore(name,location,tax,inventory,balance,expense,profit,paidTax) {
+        let i = tax;
+        tax = salesTax[i].tax;
+        const newStore = new Store (name,location,tax,inventory,balance,expense,profit,paidTax);
+        return newStore;
+    }
+
+    constructor(name,location,tax,inventory,balance,expense,profit,paidTax){
+        this.name = name;
         this.location = location;
         this.tax = tax;
-        this.inventory;
-        this.balance = balance;
-        this.expenses = expenses;
-        this.profit = profit;
-        this.paidTax;
+        this.inventory = [];
+        this.balance = 100;
+        this.expense = 0;
+        this.profit = 0;
+        this.paidTax = 0;
     }
 
-    findTax() {
+    // addItem(item){
+    //     if (this.balance > item.purchasePrice) {
+    //         this.balance = this.balance - item.purchasePrice;
+    //         this.inventory.push(item);
+    //         if (this.inventory.includes(item.upc)) {
+    //             item.quantity = item.quantity++;
+    //             this.inventory.push(item);
+    //         }
+    //     } else {
+    //         console.log("Not Enough Funds");
+    //     }
+    // }
+
+    addItem(item) {
+    if (this.balance > item.purchasePrice){//function to determine if there is enough money for store to purcahse item
+        this.balance = this.balance - item.purchasePrice;//updates balance
+        this.expense = this.expense + item.purchasePrice;//updates expense
+        if (this.inventory.includes(item)) {//checks if item is already in inventory
+            item.quantity++;//updates the quantity of item in stock
+        } else {
+            this.inventory.push(item);//else stocks item
+        }
+        let markup =item.purchasePrice + (item.purchasePrice * .2);
+        let taxPrice = markup * this.tax;
+        let wholeSale = markup + taxPrice;
+        item.marketPrice =Number (wholeSale.toFixed(2));
+    }
+    
+    }
+
+    sellItem(){
+
     }
 }
 
-//? Testing logs:
+
+//*Product Parent Class
+
+
+class Product {
+    constructor(upc,itemName,department,purchasePrice,quantity,marketPrice){
+        this.upc = upc;
+        this.itemName = itemName;
+        this.department = department;
+        this.purchasePrice = purchasePrice;
+        this.quantity = quantity;
+        this.marketPrice = marketPrice;
+    }
+}
+
+const pants = new Product(12, "Jeans", "Clothes", 25, 1);
+//console.log(pants);
+
 //console.log(salesTax.length); //51
-//console.table(salesTax); //tables each state with index value and tax value
+//console.table(salesTax); //21=MA 6=CT 19=Maine
 
-
-//*First Extended Class From Store Parent Class
-class MassachusettsStore extends Store {
-    constructor(storeName,location,tax,inventory,balance,expenses,profit,paidTax) {
-        super(storeName,location,tax,inventory,balance,expenses,profit,paidTax);
-    }
-
-    addItems() {
-
-    }
-
-    sellItems() {
-
-    }
-}
-
-//*Second Extended Class From Store Parent Class
-class ConnecticutStore extends Store {
-    constructor(storeName,location,tax,inventory,balance,expenses,profit,paidTax) {
-        super(storeName,location,tax,inventory,balance,expenses,profit,paidTax);
-    }
-    addItems() {
-
-    }
-
-    sellItems() {
-        
-    }
-}
-
-//*Third Extended Class From Store Parent Class
-class MaineStore extends Store {
-    constructor(storeName,location,tax,inventory,balance,expenses,profit,paidTax) {
-        super(storeName,location,tax,inventory,balance,expenses,profit,paidTax);
-    }
-    addItems() {
-
-    }
-
-    sellItems() {
-        
-    }
-}
 
 //! CREATE STORES
-// Generate 3 different stores, each in a different state.
 
-//* MA Store
-let massStore = new MassachusettsStore ("BigAl'sBestStore", {city: "Springfield", state: "MA"}, salesTax[21].tax, 100);
+//?MA Stores
+const maStore1 = Store.addStore("Big Al's Thrift Store", {state:"MA" , city: "Springfield"}, 21);
+const maStore2 = Store.addStore("Big Beth's Thrift Store", {state:"MA" , city: "Holyoke"}, 21);
+const maStore3 = Store.addStore("Big Carl's Thrift Store", {state:"MA" , city: "Westfield"}, 21);
 
-console.log(massStore); //logs MA Store
+// console.log(maStore1,maStore2,maStore3);
 
-//* CT Store
-let connStore = new ConnecticutStore ("BigBees'BestStore", {city: "Windsor", state: "CT"}, salesTax[6].tax, 200);
+//? CT Stores
+const ctStore1 = Store.addStore("Medium Dave's Thrift Store", {state: "CT", city: "Windsor"}, 6);
+const ctStore2 = Store.addStore("Medium Ellis' Thrift Store", {state: "CT", city: "Waterbury"}, 6);
+const ctStore3 = Store.addStore("Medium Fabian's Thrift Store", {state: "CT", city: "Hartford"}, 6);
 
-console.log(connStore); //logs CT Store
+// console.log(ctStore1,ctStore2,ctStore3);
 
-//* MN Store
-let maineStore = new MaineStore ("BigBeth'sBestStore", {city: "Portland", state: "MN"}, salesTax[19].tax, 300);
+//?MN Stores
+const mnStore1 = Store.addStore("Small Giovanni's Thrift Store", {state: "MN", city:"placeholder"}, 19);
+const mnStore2 = Store.addStore("Small Helena's Thrift Store", {state: "MN", city:"placeholder"}, 19);
+const mnStore3 = Store.addStore("Small Ismael's Thrift Store", {state: "MN", city:"placeholder"}, 19);
 
-console.log(maineStore); //logs MN Store
+// console.log(mnStore1,mnStore2,mnStore3);
+
+
 
 //! Inventory
 
@@ -145,7 +163,10 @@ console.log(maineStore); //logs MN Store
 //! Stocking
 
 //* First Store
-
+maStore1.addItem(pants);
+console.log(maStore1);
+maStore1.addItem(pants);
+console.log(maStore1);
 //* Second Store
 
 //* Third Store
@@ -162,3 +183,52 @@ console.log(maineStore); //logs MN Store
 /* 
     Simply console log each store to check the completed details.
 */
+
+
+// let testObj = {
+//     balance: 100,
+//     testArray: [],
+// }
+
+// let testProduct = {
+//     price: 25,
+//     prodName: "testProduct",
+//     quantity: 1,
+//     idNum: 13,
+// }
+
+// console.log("Test OBJ", testObj,"TestProduct", testProduct);
+
+// function addToArray(item) {
+//     if(testObj.balance > testProduct.price) {
+//         testObj.balance = testObj.balance - testProduct.price;
+//         testObj.testArray.push(item);
+//         if( testObj.balance >= testProduct.price && testObj.testArray.includes(testProduct.idNum)){
+//             testProduct.quantity = testProduct.quantity + 1;
+//             return testProduct.quantity;
+//         }
+//     } else {
+//         console.log("Not enough funds");
+//     }
+// }
+
+// console.log("---------------------");
+// addToArray(testProduct);
+// console.log(testObj);
+// console.log("---------------------");
+// addToArray(testProduct);
+// console.log(testObj);
+
+// let itemPrice = 10;
+// let taxPrice = 0.0625;
+// let marketValue;
+// let priceUp;
+// let itemTax;
+
+
+// priceUp = itemPrice + (itemPrice * .2);
+// console.log(priceUp);
+// itemTax = priceUp * taxPrice;
+// console.log(itemTax);
+// marketValue = priceUp + itemTax;
+// console.log(marketValue);
