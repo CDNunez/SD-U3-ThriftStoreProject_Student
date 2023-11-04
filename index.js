@@ -57,14 +57,14 @@ const salesTax = [
 
 //*Store Parent Class
 class Store {
-    static addStore(name,location,tax,inventory,balance,expense,profit,paidTax) {
+    static addStore(name,location,tax,inventory,balance,expense,profit,paidTax) {// factory method to create new stores
         let i = tax;
         tax = salesTax[i].tax;
-        const newStore = new Store (name,location,tax,inventory,balance,expense,profit,paidTax);
+        const newStore = new Store (name,location,tax,inventory,balance,expense,profit,paidTax);//create new store with appropriate tax
         return newStore;
     }
 
-    constructor(name,location,tax,inventory,balance,expense,profit,paidTax){
+    constructor(name,location,tax,inventory,balance,expense,profit,paidTax){//key/value pairs for store class
         this.name = name;
         this.location = location;
         this.tax = tax;
@@ -75,47 +75,52 @@ class Store {
         this.paidTax = 0;
     }
 
-    // addItem(item){
-    //     if (this.balance > item.purchasePrice) {
-    //         this.balance = this.balance - item.purchasePrice;
-    //         this.inventory.push(item);
-    //         if (this.inventory.includes(item.upc)) {
-    //             item.quantity = item.quantity++;
-    //             this.inventory.push(item);
-    //         }
-    //     } else {
-    //         console.log("Not Enough Funds");
-    //     }
-    // }
-
-    addItem(item) {
-    if (this.balance > item.purchasePrice){//function to determine if there is enough money for store to purcahse item
-        this.balance = this.balance - item.purchasePrice;//updates balance
-        this.expense = this.expense + item.purchasePrice;//updates expense
-        if (this.inventory.includes(item)) {//checks if item is already in inventory
-            item.quantity++;//updates the quantity of item in stock
+    addItem(item, markUp) {//class method to stock item to store class
+    if (this.balance > item.purchasePrice){//conditional to determine if there is enough money for store to purchase item
+        let storeBalance = this.balance - item.purchasePrice;
+        this.balance = Number (storeBalance.toFixed(2));//updates balance
+        let storeExpense = this.expense + item.purchasePrice;
+        this.expense = Number (storeExpense.toFixed(2))//updates expense
+        if (this.inventory.includes(item) && item.upc === item.upc) {//checks if item is already in inventory
+             item.quantity = item.quantity + item.quantity;//updates the quantity of item in stock
         } else {
             this.inventory.push(item);//else stocks item
         }
-        let markup =item.purchasePrice + (item.purchasePrice * .2);
-        let taxPrice = markup * this.tax;
-        let wholeSale = markup + taxPrice;
-        item.marketPrice =Number (wholeSale.toFixed(2));
+        markUp =item.purchasePrice + (item.purchasePrice * markUp);
+        let taxPrice = markUp * this.tax;
+        let wholeSale = markUp + taxPrice;
+        item.marketPrice =Number (wholeSale.toFixed(2)); //updates item market price
+        console.log(`${this.name} stocked ${item.quantity} ${item.itemName}.`) //this is just to keep track when method fires
+    } else if(this.balance < item.purchasePrice) {//conditional to log statement if the store does not have enough funds
+        console.log(`${this.name} does not have enough funds to stock ${item.itemName}.`);//keep track of method
+    } else {
+        console.log("No item selected to add to stock");
     }
     
     }
 
-    sellItem(){
-
+    sellItem(item, toSell){//class method to sell item in store class
+        if (item.quantity >= 1) {//conditional to confirm item is in stock
+            let storeBalance = this.balance + item.marketPrice;
+            this.balance = Number (storeBalance.toFixed(2)); //update store balance
+            let storeProfit = this.profit + (item.marketPrice - item.purchasePrice);
+            this.profit = Number (storeProfit.toFixed(2)); //update store profit
+            item.quantity = item.quantity - toSell;
+            let taxWithheld = this.paidTax + (item.marketPrice * this.tax);
+            this.paidTax  = Number (taxWithheld.toFixed(2)); //update paidTax
+            console.log(`${this.name} sold ${toSell} ${item.itemName}.`) //keeps track of method
+        } else {
+            console.log(`${this.name} out of ${item.itemName}.`);
     }
+}
 }
 
 
-//*Product Parent Class
+//*Product Class
 
 
-class Product {
-    constructor(upc,itemName,department,purchasePrice,quantity,marketPrice){
+class Product { //class to create objects with product parameters
+    constructor(upc,itemName,department,purchasePrice,quantity,marketPrice){//parameters of product class
         this.upc = upc;
         this.itemName = itemName;
         this.department = department;
@@ -125,11 +130,8 @@ class Product {
     }
 }
 
-const pants = new Product(12, "Jeans", "Clothes", 25, 1);
-//console.log(pants);
-
-//console.log(salesTax.length); //51
-//console.table(salesTax); //21=MA 6=CT 19=Maine
+//console.log(salesTax.length); //51 -- know the amount of index in array
+//console.table(salesTax); //21=MA 6=CT 19=Maine -- table array values with their index
 
 
 //! CREATE STORES
@@ -151,84 +153,67 @@ const ctStore3 = Store.addStore("Medium Fabian's Thrift Store", {state: "CT", ci
 //?MN Stores
 const mnStore1 = Store.addStore("Small Giovanni's Thrift Store", {state: "MN", city:"placeholder"}, 19);
 const mnStore2 = Store.addStore("Small Helena's Thrift Store", {state: "MN", city:"placeholder"}, 19);
-const mnStore3 = Store.addStore("Small Ismael's Thrift Store", {state: "MN", city:"placeholder"}, 19);
+const mnStore3 = Store.addStore("Small Ismael's Thrift Store", {state: "MN", city:"Portland"}, 19);
 
 // console.log(mnStore1,mnStore2,mnStore3);
 
 
 
 //! Inventory
+const pins = new Product(10, 'Pins', 'Accessories', 1, 10);
+const badges = new Product(10, 'Badges', 'Accessories', 1, 5);
+
+const lipStick = new Product(11, "Lip Stick", 'Makeup', 5, 1);
+const eyeShadow = new Product(11, "Eye Shadow", 'Makeup', 4, 1);
+
+const skinnyJeans = new Product(12, "Skinny Jeans", "Pants", 25, 1);
+const bootCutJeans = new Product(12, "Boot Cut Jeans", "Pants", 20, 1);
+const straightJeans = new Product(12, "Straight Jeans", "Pants", 15, 1);
+
+const shirts = new Product(13, "T-Shirts", "Clothes", 12, 2);
+const shoes = new Product (14, "Converse", "Shoes", 10, 1);
+const belt = new Product (15, "Leather belt", "Accessories", 5, 15);
+
+const car = new Product (16, "Honda", "Auto", 16000, 1);
 
 
 //! Stocking
 
 //* First Store
-maStore1.addItem(pants);
-console.log(maStore1);
-maStore1.addItem(pants);
-console.log(maStore1);
+maStore1.addItem(skinnyJeans, .6);
+maStore1.addItem(bootCutJeans, .5);
+maStore1.addItem(shirts, .6);
+maStore1.addItem(shirts, .6);
 //* Second Store
-
+ctStore2.addItem(pins, .5);
+ctStore2.addItem(pins, .5);
+ctStore2.addItem(badges, .8);
 //* Third Store
-
+mnStore3.addItem(shoes, .5);
+mnStore3.addItem(belt, .3);
+mnStore3.addItem(car, .8);
 //! Selling
 
 //* First Store
-
+maStore1.sellItem(shirts, 1);
+maStore1.sellItem(bootCutJeans, 1);
 //* Second Store
-
+ctStore2.sellItem(pins, 5);
 //* Third Store
-
+mnStore3.sellItem(belt, 10);
 //! Testing
 /* 
     Simply console log each store to check the completed details.
 */
 
+console.log(maStore1);
 
-// let testObj = {
-//     balance: 100,
-//     testArray: [],
-// }
-
-// let testProduct = {
-//     price: 25,
-//     prodName: "testProduct",
-//     quantity: 1,
-//     idNum: 13,
-// }
-
-// console.log("Test OBJ", testObj,"TestProduct", testProduct);
-
-// function addToArray(item) {
-//     if(testObj.balance > testProduct.price) {
-//         testObj.balance = testObj.balance - testProduct.price;
-//         testObj.testArray.push(item);
-//         if( testObj.balance >= testProduct.price && testObj.testArray.includes(testProduct.idNum)){
-//             testProduct.quantity = testProduct.quantity + 1;
-//             return testProduct.quantity;
-//         }
-//     } else {
-//         console.log("Not enough funds");
-//     }
-// }
-
-// console.log("---------------------");
-// addToArray(testProduct);
-// console.log(testObj);
-// console.log("---------------------");
-// addToArray(testProduct);
-// console.log(testObj);
-
-// let itemPrice = 10;
-// let taxPrice = 0.0625;
-// let marketValue;
-// let priceUp;
-// let itemTax;
+console.log('-------------------------------'); //divider for readability
 
 
-// priceUp = itemPrice + (itemPrice * .2);
-// console.log(priceUp);
-// itemTax = priceUp * taxPrice;
-// console.log(itemTax);
-// marketValue = priceUp + itemTax;
-// console.log(marketValue);
+console.log(ctStore2);
+
+console.log('-----------------------------'); //divider for readability
+
+
+console.log(mnStore3);
